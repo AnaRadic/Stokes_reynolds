@@ -1,1 +1,13 @@
-# Stokes_reynolds
+Treba riješiti Stokesovu zadaću u domeni Ω ⊂ R^2 koja je pravokutnik (0, 10) × (0, 2) bez
+kvadrata (3, 4) × (1/2, 3/2), koji predstavlja rigidnu prepreku. Na ulazu x = 0 zadana je brzina
+u = e1, a na izlaznoj granici x = 10 zadano je normalno naprezanje jednako nuli (artificijelan
+rubni uvjet). Na svim ostalim dijelovima granice brzina je jednaka nuli. Izračunajte silu fluida
+na prepreku. Uzmite da su jednadžbe zapisane u bezdimenzionalnoj formi i varirajte Reynoldsov
+broj od 1 do maksimalnog kojeg možete postići. Konvektivni član ne zanemariti. Kako sila varira
+s Re?
+Napisati izvještaj o rezultatima simulacija u pdf formatu koristeći LaTeX. Izvještaj treba
+sadržavati:
+1. Opis problema i njegov zapis u bezdimenzionalnoj formi (s Reynoldsovim brojem kao jedinim
+parametrom).
+2. Opis izračuna sile na prepreku.
+3. Grafički prikaz sile na prepreku u ovisnosti o Reynoldsovom broju
