@@ -27,7 +27,6 @@ dune_project()
 dune_enable_all_packages()
 
 ######## add subdirectories ########
-add_subdirectory(include)
 add_subdirectory(src)
 
 ######## finalize the dune project ######## 
