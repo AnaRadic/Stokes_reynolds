@@ -11,7 +11,6 @@
 
 #include <dune/grid/io/file/gmshreader.hh>
 #include <dune/grid/uggrid.hh>
-
 #include <dune/common/parametertreeparser.hh>
 
 #include "bc_extension.hh"
@@ -52,7 +51,7 @@ int main(int argc, char **argv) {
   std::string outf = params.get<std::string>("OutputFile"); // izlazni VTK file
   RF mu            = params.get<double>("physics.mu");
   RF rho           = params.get<double>("physics.rho");
-  RF Re            = params.get<double>("physics.Re")
+  RF Re            = params.get<double>("physics.Re");
   RF intensity      = params.get<double>("velmax");  // maksimalna ulazna brzina
   RF dt = params.get<double>("time.dt");
   RF tfin = params.get<double>("time.tfin");
@@ -92,10 +91,10 @@ int main(int argc, char **argv) {
   using Parameters = Dune::PDELab::NavierStokesDefaultParameters<
       GV, RF, SourceFunction, BCTypeParam, BdrySolution, NeumannFlux, navier, tensor>;
 
-  Parameters parameters(mu, rho, Re, source_function, bdry_type, bdry_solution,
+  Parameters parameters(mu, rho, source_function, bdry_type, bdry_solution,
                            neumann_flux);
 
-  driver<GV, BdrySolution, Parameters>(gv, outf, parameters, bdry_solution);
+  driver(gv, outf, parameters, bdry_solution, dt, tfin);
 
   return 0;
 }
