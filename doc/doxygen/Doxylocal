@@ -1,5 +1,5 @@
 # This file contains local changes to the doxygen configuration
-# please use '+=' to add files/directories to the lists
+# please us '+=' to add file/directories to the lists
 
 # The INPUT tag can be used to specify the files and/or directories that contain
 # documented source files. You may enter file names like "myfile.cpp" or
@@ -15,7 +15,7 @@ INPUT                 += @top_srcdir@/dune/
 # excluded from the INPUT source files. This way you can easily exclude a
 # subdirectory from a directory tree whose root is specified with the INPUT tag.
 
-# EXCLUDE               += @top_srcdir@/dune/ns/test
+# EXCLUDE               += @top_srcdir@/dune/stokes_reynolds/test
 
 # The EXAMPLE_PATH tag can be used to specify one or more files or
 # directories that contain example code fragments that are included (see
@@ -27,4 +27,4 @@ INPUT                 += @top_srcdir@/dune/
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-# IMAGE_PATH            += @top_srcdir@/dune/ns/pics
+# IMAGE_PATH            += @top_srcdir@/dune/stokes_reynolds/pics

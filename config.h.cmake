@@ -1,4 +1,4 @@
-/* begin ns
+/* begin stokes_reynolds
    put the definitions for config.h specific to
    your project here. Everything above will be
    overwritten
@@ -28,18 +28,18 @@
 
 /* end private */
 
-/* Define to the version of ns */
-#define NS_VERSION "@NS_VERSION@"
+/* Define to the version of stokes_reynolds */
+#define STOKES_REYNOLDS_VERSION "@STOKES_REYNOLDS_VERSION@"
 
-/* Define to the major version of ns */
-#define NS_VERSION_MAJOR @NS_VERSION_MAJOR@
+/* Define to the major version of stokes_reynolds */
+#define STOKES_REYNOLDS_VERSION_MAJOR @STOKES_REYNOLDS_VERSION_MAJOR@
 
-/* Define to the minor version of ns */
-#define NS_VERSION_MINOR @NS_VERSION_MINOR@
+/* Define to the minor version of stokes_reynolds */
+#define STOKES_REYNOLDS_VERSION_MINOR @STOKES_REYNOLDS_VERSION_MINOR@
 
-/* Define to the revision of ns */
-#define NS_VERSION_REVISION @NS_VERSION_REVISION@
+/* Define to the revision of stokes_reynolds */
+#define STOKES_REYNOLDS_VERSION_REVISION @STOKES_REYNOLDS_VERSION_REVISION@
 
-/* end ns
+/* end stokes_reynolds
    Everything below here will be overwritten
 */

@@ -10,6 +10,6 @@ Name: @PACKAGE_NAME@
 Version: @VERSION@
 Description: stokes_reynolds module
 URL: http://dune-project.org/
-Requires: dune-common dune-istl dune-geometry dune-uggrid dune-grid dune-localfunctions dune-typetree dune-alugrid dune-pdelab
+Requires: dune-common dune-geometry dune-grid dune-localfunctions dune-istl dune-alugrid
 Libs: -L${libdir}
 Cflags: -I${includedir}

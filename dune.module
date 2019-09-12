@@ -5,6 +5,6 @@
 #Name of the module
 Module: stokes_reynolds
 Version: 1.0
-Maintainer: jurak@math.hr
+Maintainer: anaradic56@gmail.com
 #depending on
-Depends: dune-common dune-istl dune-geometry dune-uggrid dune-grid dune-localfunctions dune-typetree dune-alugrid dune-pdelab
+Depends: dune-common dune-geometry dune-grid dune-localfunctions dune-istl dune-alugrid
