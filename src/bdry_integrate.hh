@@ -18,85 +18,55 @@
 #include <dune/geometry/quadraturerules.hh>
 #include "driver.hh"
 
-template<template<typename ctype, int dim> class Function, class Grid>
-double bdry_integration(Grid& grid, int p) {
 
-   std::vector<std::string> rec0fLines;
-   std::string oneLine;
+template <typename GV, typename PARAMS>
+double bdry_integration(const GV& gv, double dt, double tfin,PARAMS & parameters)
 
-   ifstream file0("obstacle.msh");
-   if(file0.is_open())
-   {
-       while(getLine(file0,oneLine))
+{
+
+  double time = 0.0;
+  double integral = 0.0;
+  // Petlja po svim elementima
+    while (time < tfin-1e-8) {
+
+  {
+
+      for (auto const &element : elements(gv))
        {
-           rec0fLines.push_back(oneLine);
-       }
-       file0.close();
-   }
-   else std::cout << "File not opened";
+    double elem_integral = 0.0;
+    // petlja po svim stranicama elementa
+    for (auto const &side : intersections(gv, element)) {
+    auto xg = intersection.geometry().global( coord );
 
-   //test
-   for(auto it=rec0fLines.begin();it!=rec0fLines.end();it++)
-   {
-       std::cout <<*it << std::endl;
-   }
-    const int dim = Grid::dimension;
-    typedef typename Grid::ctype ctype;
+      if (side.boundary()&& xg[0]>0.0 )) // Jesmo li na granici domene?
+      {
 
-    // Vektorsko polje koje integriramo
-    Function<ctype, dim> fptr;
 
-    // leaf GridView
-    auto gridView = grid.leafGridView();
-
-    auto endit = gridView.template end<0>();
-    auto it = gridView.template begin<0>();
-
-    double integral = 0.0;
-    // Petlja po svim elementima
-    for (; it != endit; ++it) {
-        // Intersection  iteratori
-        auto isit_end = gridView.iend(*it);
-        auto isit = gridView.ibegin(*it);
-
-        double elem_integral = 0.0;
-        for (; isit != isit_end; ++isit) { // petlja po svim stranicama elementa
-
-            if (isit->boundary())  // Jesmo li na granici domene?
-            {
-                const auto igeo = isit->geometry();
-                const auto gt = igeo.type();
-                //std::cout << igeo.center() << std::endl;
-
-                auto outerNormal = isit->centerUnitOuterNormal();
-                // std::cout << outerNormal << std::endl;
-
-                // Zatražimo kvadraturnu formulu (obavezno koristiti referencu)
-                // Formula mora biti dimenzije dim -1!
-                const auto& rule = Dune::QuadratureRules<ctype, dim - 1>::rule(gt, p);
-
-                //if (rule.order() < p)
-                  //  DUNE_THROW(Dune::Exception, "order not available");
-
-                double result = 0.0;
-                // Petlja po svim integracijskim toèkama
-                auto iq = rule.begin();
-                for (; iq != rule.end(); ++iq) {
-                    // Na iteratoru i zovemo metode position() i weight()
-                    auto fval = fptr(igeo.global(iq->position()));
-                    double weight = iq->weight();
-                    // | det (grad g) | daje Geometry objekt
-                    double detjac = igeo.integrationElement(iq->position());
-                    result += (pressure * outerNormal) * weight * detjac;
-                }  // kraj petlje po svim integracijskim toèkama
-
-                //  std::cout << result << std::endl;
-                elem_integral += result;
-
-            } // kraj iif(isit->boundary()
+        const auto sidegeo = side.geometry();
+        auto outerNormal = side.centerUnitOuterNormal();
+        // ZatraÄ¹Ä¾imo kvadraturnu formulu na stranici (dimenzija dim -1)
+        const auto &rule =
+            Dune::QuadratureRules<double, dim - 1>::rule(sidegeo.type(), p);
+        if (rule.order() < p)
+             std::cerr << "Integracijska formula reda " << p << " nije dostupna.\n";
+        double result = 0.0;
+        // Petlja po svim integracijskim toÃ„Å¤kama
+        for (auto const &qpoint : rule) {
+          double weight = qpoint.weight();
+          // | det (grad g) | daje Geometry objekt
+          double detjac = sidegeo.integrationElement(qpoint.position());
+          result += (pressure * outerNormal) * weight * detjac;
         }
-        integral += elem_integral;
-    } // kraj petlje po svim elementima
 
-    return integral;
+        elem_integral += result;
+      }
+    } // kraj petlje po svim stranicama
+    integral += elem_integral;
+  }
+   // kraj petlje po svim elementima
+    time+=dt;
 }
+  return integral;
+
+}
+
