@@ -1,4 +1,4 @@
-#ifdef HAVE_CONFIG_H
+ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 #include <iostream>
@@ -15,23 +15,21 @@
 
 #include "bc_extension.hh"
 #include "driver.hh"
-//#include "bdry_integrate.hh"
+#include "bdry_integrate.hh"
+
 
 int main(int argc, char **argv) {
 
 #if !HAVE_SUPERLU
-  std::cerr << "Error: These examples work only if SuperLU is available."
-            << std::endl;
-  exit(1);
+    std::cerr << "Error: These examples work only if SuperLU is available." << std::endl;
+    exit(1);
 #endif
-  Dune::MPIHelper::instance(argc, argv);
-  // Initialize Navier Stokes parameter class from file
-  Dune::ParameterTree params;
-
-  std::string input_filename("stokes.input");
+    Dune::MPIHelper::instance(argc, argv);
+    Dune::ParameterTree params;
+      
+     std::string input_filename("stokes.input");
   if (argc > 1)
     input_filename = argv[1];
-
   std::cout << "Reading input file \"" << input_filename << "\"" << std::endl;
   try {
     Dune::ParameterTreeParser::readINITree(input_filename, params);
@@ -52,17 +50,19 @@ int main(int argc, char **argv) {
   std::string outf = params.get<std::string>("OutputFile"); // izlazni VTK file
   RF mu            = params.get<double>("physics.mu");
   RF rho           = params.get<double>("physics.rho");
-  RF Re            = params.get<double>("physics.Re");
+ // RF Re            = params.get<double>("physics.Re");
   RF intensity      = params.get<double>("velmax");  // maksimalna ulazna brzina
   RF dt = params.get<double>("time.dt");
   RF tfin = params.get<double>("time.tfin");
 
-  // Mreža se čita iz grids/lshape.msh datoteke
-  std::unique_ptr<GridType> pgrid{Dune::GmshReader<GridType>::read("mreza.msh", true, false)};
+  // Mreža se čita iz grids/mreza.msh datoteke
+  std::unique_ptr<GridType> pgrid{Dune::GmshReader<GridType>::read("lshape.msh", true, false)};
   pgrid->globalRefine(refinement);
-
+  
   using GV =  GridType::LeafGridView;
   const GV &gv = pgrid->leafGridView();
+  
+  bdry_integration(gv, dt, tfin, "");
 
   // 2. Konstrukcija klase paramatara
   // Dune::PDELab::NavierStokesDefaultParameters.
