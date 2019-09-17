@@ -28,16 +28,12 @@
 
 #include <dune/pdelab/common/function.hh>
 #include <dune/pdelab/common/vtkexport.hh>
-//#include <dune/pdelab/gridoperator/gridoperator.hh>
 #include <dune/pdelab/backend/istl.hh>
 #include <dune/pdelab/backend/istl/seqistlsolverbackend.hh>
 #include <dune/pdelab/backend/simple/descriptors.hh>
 
 
-#include <dune/pdelab/backend/istl/bcrsmatrixbackend.hh>//dodano
-//#include <dune/pdelab/backend/istlmatrixbackend.hh>
-//#include <dune/pdelab/backend/istlsolverbackend.hh>
-//#include <dune/pdelab/localoperator/cg_stokes.hh>
+#include <dune/pdelab/backend/istl/bcrsmatrixbackend.hh> //dodano
 
 #include <dune/pdelab/localoperator/taylorhoodnavierstokes.hh>
 #include <dune/pdelab/newton/newton.hh>
@@ -66,16 +62,12 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     P_FEM pFem(gv);
 
     typedef Dune::PDELab::ConformingDirichletConstraints CDC;
- //   typedef Dune::PDELab::ISTL::VectorBackend<Dune::PDELab::ISTL::Blocking::none, 1> VB; SMETA MU DIMENZIJA
+
     typedef Dune::PDELab::ISTL::VectorBackend<Dune::PDELab::ISTL::Blocking::none> VB;
 
-    //using CDC = ConformingDirichletConstraints;//mozda maknuti
-    //using VB = ISTL::VectorBackend<>;//mozda maknuti
-    // Ova klasa direktno konstruira vektorske elemente u R^dim.
-    // Prostor mrežnih funkcija za brzinu (vektorski):  V_h
 
-    typedef Dune::PDELab::VectorGridFunctionSpace<GV, V_FEM, dim, VB, VB, CDC> V_GFS;//ili PGFS_V_GFS
-    //using V_GFS = VectorGridFunctionSpace<GV, V_FEM, dim, VB, VB, CDC>;//MOZDA MAKNUTI
+    typedef Dune::PDELab::VectorGridFunctionSpace<GV, V_FEM, dim, VB, VB, CDC> V_GFS;
+
     V_GFS VGfs(gv, vFem);
     VGfs.name("velocity");
 
@@ -83,7 +75,7 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     // Prostor mrežnih funkcija za tlak (skalarni): W_h
 
     typedef Dune::PDELab::GridFunctionSpace<GV, P_FEM, CDC, VB> P_GFS;
-    //using P_GFS = GridFunctionSpace<GV, P_FEM, CDC, VB>;//MOZDA MAKNUTI
+
     P_GFS pGfs(gv, pFem);
     pGfs.name("pressure");
 
@@ -92,12 +84,11 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     // LexicographicOrderingTag daje poredak varijabli: v1,v2,p
     typedef Dune::PDELab::CompositeGridFunctionSpace
                 <VB, Dune::PDELab::LexicographicOrderingTag, V_GFS, P_GFS> GFS;
-    //using GFS = CompositeGridFunctionSpace<VB, LexicographicOrderingTag, V_GFS, P_GFS> ;//MOZDA MAKNUTI
+
     GFS gfs(VGfs, pGfs);
 
     // Primjena Dirichletovih ograničenja
     typedef typename GFS::template ConstraintsContainer<RF>::Type C;
-    //using C = typename GFS::template ConstraintsContainer<double>::Type;//MOZDA MAKNUTI
     C cg;
     cg.clear();
 
@@ -108,12 +99,6 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
         typedef Dune::PDELab::StokesPressureDirichletConstraints<PARAMS>                                  PressureConstraints;
         typedef Dune::PDELab::CompositeConstraintsParameters<VelocityConstraints, PressureConstraints> Constraints;
 
-    // Određivanje Dirichletove granice. Ovdje se koriste pomoćne klase koje određuju
-    // Dirichletovu granicu za svaku komponentu vektorske funkcije (v1,v2,p).
-    //using ScalarVelConstraints = StokesVelocityDirichletConstraints<PARAMS>;//MOZDA MAKNUTI
-    //using VelocityConstraints = PowerConstraintsParameters<ScalarVelConstraints, dim>;//MOZDA MAKNUTI
-    //using PressureConstraints = StokesPressureDirichletConstraints<PARAMS>;
-    //using Constraints = CompositeConstraintsParameters<VelocityConstraints, PressureConstraints>;
 
     ScalarVelocityConstraints scalarvelocity_constraints(parameters);
     VelocityConstraints  velocity_constraints(scalarvelocity_constraints);
@@ -121,10 +106,7 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     Constraints          bconst(velocity_constraints, pressure_constraints);
 
     // Odredi Dirichletova ograničenja
-    Dune::PDELab::constraints(bconst, gfs, cg);  // MIJEŠANJE IMENA
-//    constraints(bconst, gfs, cg);  --
-
-    //Dune::PDELab::NavierStokesDefaultParameters< GV, RF, F, B, V, J, navier, tensor >//mozda
+    Dune::PDELab::constraints(bconst, gfs, cg);
 
 
     const bool navier = true;
@@ -134,9 +116,6 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     typedef Dune::PDELab::NavierStokesMass<PARAMS> TLOP;
     TLOP tlop(parameters);
 
-
-
- //   Dune::PDELab::Simple::MatrixBackend< Container >::Pattern< Matrix, GFSV, GFSU > MBE;
 
  //   typedef VB::MatrixBackend MBE;
     typedef Dune::PDELab::ISTL::BCRSMatrixBackend<> MBE;
@@ -152,11 +131,6 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     using LOP = TaylorHoodNavierStokes<PARAMS>;
     LOP lop(parameters, q);
 
-    //Mrežni operator
-//    using MBE = ISTL::BCRSMatrixBackend<>;
-//    MBE mbe(5); // maksimalan broj ne-nul elemenat u retku (samo pretpostavka)
-//    using GO = Dune::PDELab::GridOperator<GFS, GFS, LOP, MBE, double, double, double, C, C>;
-//    GO go(gfs, cg, gfs, cg, lop, mbe);
 
     // Vektor koeficijenata i interpolacija rubnog uvjeta
     using U = typename GO::Traits::Domain;
@@ -197,25 +171,6 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     Dune::PDELab::OneStepMethod<RF,GO,PDESOLVER,U,U> osm(method,go,newton);
     osm.setVerbosityLevel(2);
 
-//Dune::PDELab::NavierStokesDefaultParameters< GV, RF, F, B, V, J, navier, tensor >/MOZDA
-    //using LS = ISTLBackend_SEQ_SuperLU;
-    //LS ls(false);
-
-
-
-    // Riješi sustav.
-    //Newton<GO, LS, U> newton(go, x0, ls);
-    //newton.setReassembleThreshold(0.0);
-    //newton.setVerbosityLevel(2);
-    //newton.setMaxIterations(25);
-    //newton.setLineSearchMaxIterations(30);
-    //newton.apply();
-
-    // Izračunaj rezidual i ispiši njegovu normu.
-//    U r(gfs);
-//    r = 0.;
-//    go.residual(x0, r);
-//    std::cout << "Final Residual: " << r.two_norm() << std::endl;
 
     // Ispis rješenja. NOVA VERZIJA KORISTI SE SEQUENCE WRITER
     typedef Dune::SubsamplingVTKWriter<GV>  VTKW;
@@ -223,15 +178,6 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
     Dune::PDELab::addSolutionToVTKWriter(vtkwriter, gfs, x0);
     Dune::VTKSequenceWriter<GV> writer(std::make_shared<VTKW>(vtkwriter), "out");
 
-/*
-    Dune::PDELab::FilenameHelper fn(filename);
-    {
-        Dune::SubsamplingVTKWriter<GV> vtkwriter(gv, 2);
-        Dune::PDELab::addSolutionToVTKWriter(vtkwriter, gfs, x0);
-        vtkwriter.write(fn.getName(), Dune::VTK::ascii);
-        fn.increment();
-    }
-*/
 
     double time = 0.0;
     writer.write(time);
@@ -249,13 +195,7 @@ void driver(const GV& gv, std::string filename, PARAMS & parameters, IF & bdry_s
 
         go.residual(x1, r);
         std::cout << "Final Residual: " << r.two_norm() << std::endl;
-        // graphics  STARI KOD!
-//        {
-//            Dune::SubsamplingVTKWriter<GV> vtkwriter(gv, 2);
-//            Dune::PDELab::addSolutionToVTKWriter(vtkwriter, gfs, x0);
-//            vtkwriter.write(fn.getName(), Dune::VTK::ascii);
-//            fn.increment();
-//        }
+     
         x0 = x1;                                             // pripremi sljedeći vremenski korak
         time += dt;
         writer.write(time);
