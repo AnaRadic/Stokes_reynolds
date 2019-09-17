@@ -10,7 +10,7 @@ level = 0
 
 [time]
 dt = 0.1
-tfin = 10.0
+tfin = 1.0
 
 [boundaries]
 pressure = 10.0
