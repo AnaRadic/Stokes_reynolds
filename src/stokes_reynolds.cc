@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
   RF tfin = params.get<double>("time.tfin");
 
   // Mreža se čita iz grids/mreza.msh datoteke
-  std::unique_ptr<GridType> pgrid{Dune::GmshReader<GridType>::read("lshape.msh", true, false)};
+  std::unique_ptr<GridType> pgrid{Dune::GmshReader<GridType>::read("mreza.msh", true, false)};
   pgrid->globalRefine(refinement);
   
   using GV =  GridType::LeafGridView;
